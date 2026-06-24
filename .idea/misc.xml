@@ -6,6 +6,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/ManagerApp/pom.xml" />
+        <option value="$PROJECT_DIR$/Manager/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
