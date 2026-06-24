@@ -1,7 +1,29 @@
 blinker==1.9.0
+# Event/signaling system used internally by Flask
+# Lets Flask extensions listen for events
+
 click==8.3.0
+# Command-line interface library
+# Powers commands like:
+# flask run
+# flask shell
+
 Flask==3.1.2
+# Main Flask web framework
+# Used to create routes, APIs, handle requests and responses
+
 itsdangerous==2.2.0
+# Secure token/signing library
+# Used for sessions, cookies, password reset links, and signed data
+
 Jinja2==3.1.6
+# Flask's templating engine
+# Used by render_template() to generate dynamic HTML pages
+
 MarkupSafe==3.0.3
+# Escapes HTML safely to prevent XSS attacks
+# Used internally by Jinja2
+
 Werkzeug==3.1.3
+# Core library Flask is built on top of
+# Handles requests, responses, routing, file uploads, etc.
