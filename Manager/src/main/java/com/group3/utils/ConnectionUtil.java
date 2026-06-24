@@ -1,5 +1,7 @@
 package com.group3.utils;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,6 +14,9 @@ public class ConnectionUtil {
         catch (ClassNotFoundException e){
             e.printStackTrace();
         }
+        Dotenv dotenv = Dotenv.configure().directory("..").load();
+        String dbPath = dotenv.get("APP_DB_PATH");
+
         String url = "jdbc:sqlite:db_files/main";
         return DriverManager.getConnection(url);
     }
