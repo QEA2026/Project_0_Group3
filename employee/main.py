@@ -7,7 +7,7 @@ from repository import (DatabaseConnection , UserRepository , User )
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-db_path = os.getenv("APP_DB_PATH", "./db/main")  # with default
+db_path = os.getenv("APP_DB_PATH", "../db/main")  # with default
 
 def create_app():
     db_connection = DatabaseConnection()
