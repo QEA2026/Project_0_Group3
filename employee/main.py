@@ -35,7 +35,7 @@ def create_sample_data():
     
 
     returned_user = user_repository.create(sample_employee)
-    print(f"Created sample employee: {returned_user.id} \n {returned_user.username} \n {returned_user.password} \n {returned_user.role} ")
+    print(f"Created sample employee: \n{returned_user.id} \n{returned_user.username} \n{returned_user.password} \n{returned_user.role} ")
 
 
 

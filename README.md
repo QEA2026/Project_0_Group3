@@ -97,3 +97,8 @@ These are additional features to implement after the core requirements are compl
 ## 5. Unit & Mock Testing
 
 
+
+# Commands Section 
+
+- pip freeze >> requirements.txt
+- pip uninstall -r requirements.txt -y
