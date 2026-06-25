@@ -5,7 +5,7 @@ from typing import Optional
 class DatabaseConnection:
     def __init__(self, db_path: Optional[str] = None):
         """get and save the DB Path"""
-        self.db_path = db_path or os.getenv('APP_DB_PATH', "main.db")
+        self.db_path = db_path or os.getenv('APP_DB_PATH', "main")
         print(os.getenv('APP_DB_PATH'))
 
     def get_connection(self) -> sqlite3.Connection:
