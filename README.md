@@ -70,3 +70,30 @@ The system uses a **shared SQLite database** to ensure consistent data access an
 |reviewer|INTEGER|Manager user ID (null if not reviewed yet)|
 |comment|TEXT|Feedback from Manager|
 |review_date|TEXT|Date review decision was made|
+
+
+# Stretch Goals
+
+These are additional features to implement after the core requirements are complete.
+
+## 1. JWT Authentication
+
+
+---
+
+## 2. Password Hashing
+
+---
+
+## 3. Improve Console Design
+
+
+---
+
+## 4. Add Extra Methods in controllers
+
+---
+
+## 5. Unit & Mock Testing
+
+
