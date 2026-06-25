@@ -8,7 +8,6 @@ class User:
     password: str
     role: str
 
-
 #     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 #     username TEXT UNIQUE NOT NULL,
 #     password TEXT NOT NULL,

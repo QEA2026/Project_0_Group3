@@ -39,5 +39,3 @@ class UserRepository:
             conn.commit()
 
         return user
-            
-        

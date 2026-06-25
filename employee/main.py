@@ -13,9 +13,6 @@ def create_app():
     db_connection = DatabaseConnection()
     db_connection.initialize_database()
 
-    
-
-
 
 def create_sample_data():
     db_connection = DatabaseConnection()
