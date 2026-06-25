@@ -10,10 +10,13 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 db_path = os.getenv("APP_DB_PATH", "../db/main")  # with default
 
 def create_app():
+
     db_connection = DatabaseConnection()
     db_connection.initialize_database()
 
-    
+    user_repository = UserRepository(db_connection)
+
+
 
 
 
