@@ -3,11 +3,11 @@ from .expense_model import Expense
 from .database import DatabaseConnection
 
 # CREATE TABLE IF NOT EXISTS expenses(
-#                     expense_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                     id INTEGER PRIMARY KEY AUTOINCREMENT,
 #                     amount REAL,
 #                     description TEXT,
 #                     expense_date TEXT,
-#                     user_id_fk INTEGER NOT NULL, FOREIGN KEY (user_id_fk) REFERENCES users(user_id)
+#                     user_id_fk INTEGER NOT NULL, FOREIGN KEY (user_id_fk) REFERENCES users(id)
 #                 )
 
 class ExpenseRepository:
@@ -20,12 +20,16 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute(
-                "INSERT INTO expenses VALUES (?,?,?,?)",
+                "INSERT INTO expenses(amount, description, expense_date, user_id_fk) VALUES (?,?,?,?)",
                 (expense.amount, expense.description, expense.expense_date, expense.user_id_fk)
             )
             expense.id = cursor.lastrowid
 
             # TODO: Insert it into approvals this newly created expense along with the expense id
+            conn.execute(
+                "INSERT INTO approvals (expense_id_fk , status) VALUES (?, 'pending')",
+                (expense.id,)
+            )
 
             conn.commit()
         return expense
@@ -35,14 +39,14 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute(
-                "SELECT expense_id, amount, description, expense_date, user_id_fk FROM expenses WHERE expense_id = ?",
+                "SELECT id, amount, description, expense_date, user_id_fk FROM expenses WHERE id = ?",
                 (expense_id,)
             )
 
             row = cursor.fetchone()
 
             if row:
-                return Expense(expense_id=row["expense_id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=row["user_id_fk"])
+                return Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=row["user_id_fk"])
             
             return None
         
@@ -53,12 +57,12 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute(
-                "SELECT expense_id, amount, description, expense_date, user_id_fk FROM expenses WHERE user_id_fk = ?",
+                "SELECT id, amount, description, expense_date, user_id_fk FROM expenses WHERE user_id_fk = ?",
                 (user_id,)
             )
 
             for row in cursor.fetchall():
-                expenses.append(Expense(expense_id=row["expense_id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=row["user_id_fk"]))
+                expenses.append(Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=row["user_id_fk"]))
         
         return expenses
     
@@ -66,8 +70,8 @@ class ExpenseRepository:
 
         with self.db_connection.get_connection() as conn:
             conn.execute(
-                "UPDATE expenses SET amount = ?, description = ? WHERE expense_id = ?",
-                (expense.amount , expense.description, expense.expense_id)
+                "UPDATE expenses SET amount = ?, description = ?, expense_date = ? WHERE id = ?",
+                (expense.amount , expense.description, expense.expense_date , expense.id)
             )
 
             conn.commit()
@@ -78,7 +82,7 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
             conn.execute("DELETE from approvals WHERE expense_id_fk = ?", (expense_id,))
 
-            cursor = conn.execute("DELETE from expenses WHERE expense_id = ?", (expense_id,))
+            cursor = conn.execute("DELETE from expenses WHERE id = ?", (expense_id,))
             conn.commit()
 
             return cursor.rowcount > 0

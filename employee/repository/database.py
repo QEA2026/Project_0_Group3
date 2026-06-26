@@ -17,9 +17,21 @@ class DatabaseConnection:
     def initialize_database(self):
         with self.get_connection() as conn:
 
+            
+
+            # conn.execute('''
+            #     DROP TABLE IF EXISTS approvals;
+            # ''')
+            # conn.execute('''
+            #     DROP TABLE IF EXISTS expenses;
+            # ''')
+            # conn.execute('''
+            #     DROP TABLE IF EXISTS users;
+            # ''')
+
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS users (
-                    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
                     password TEXT NOT NULL,
                     role TEXT NOT NULL
@@ -28,12 +40,12 @@ class DatabaseConnection:
 
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS expenses(
-                    expense_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     amount REAL,
                     description TEXT,
                     expense_date TEXT,
                     user_id_fk INTEGER NOT NULL,
-                    FOREIGN KEY (user_id_fk) REFERENCES users(user_id)
+                    FOREIGN KEY (user_id_fk) REFERENCES users(id)
                 )
             ''')
 
@@ -45,7 +57,7 @@ class DatabaseConnection:
                     reviewer INTEGER,
                     comment TEXT,
                     review_date TEXT,
-                    FOREIGN KEY (expense_id_fk) REFERENCES expenses(expense_id)
+                    FOREIGN KEY (expense_id_fk) REFERENCES expenses(id)
                 )
             ''')
 

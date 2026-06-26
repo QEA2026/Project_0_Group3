@@ -96,6 +96,8 @@ These are additional features to implement after the core requirements are compl
 
 ## 5. Unit & Mock Testing
 
+## 6. Nicer reports / filtering
+
 
 
 # Commands Section 

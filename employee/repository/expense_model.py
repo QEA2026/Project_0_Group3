@@ -12,7 +12,7 @@ from typing import Optional
 
 @dataclass
 class Expense:
-    expense_id: Optional[int]
+    id: Optional[int]
     amount: float
     description: str
     expense_date: str
