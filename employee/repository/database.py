@@ -1,12 +1,19 @@
 import sqlite3
 import os
+from pathlib import Path
 from typing import Optional
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 class DatabaseConnection:
     def __init__(self, db_path: Optional[str] = None):
         """get and save the DB Path"""
-        self.db_path = db_path or os.getenv('APP_DB_PATH', "../db/main")
-        print(os.getenv('APP_DB_PATH'))
+        raw_path = db_path or os.getenv('APP_DB_PATH', "./db/main.db")
+        resolved = Path(raw_path)
+        if not resolved.is_absolute():
+            resolved = (PROJECT_ROOT / resolved).resolve()
+        resolved.parent.mkdir(parents=True, exist_ok=True)
+        self.db_path = str(resolved)
 
     def get_connection(self) -> sqlite3.Connection:
         """Connect to the path saved in the above (__init__) function"""
