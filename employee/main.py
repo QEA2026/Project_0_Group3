@@ -16,10 +16,6 @@ def create_app():
 
     user_repository = UserRepository(db_connection)
 
-
-
-
-
 def create_sample_data():
     db_connection = DatabaseConnection()
     db_connection.initialize_database()
@@ -32,13 +28,9 @@ def create_sample_data():
         password="password1234",
         role="Employee",
         )
-    
 
     returned_user = user_repository.create(sample_employee)
     print(f"Created sample employee: \n{returned_user.id} \n{returned_user.username} \n{returned_user.password} \n{returned_user.role} ")
-
-
-
 
 if __name__ == '__main__':
     app = create_app()
