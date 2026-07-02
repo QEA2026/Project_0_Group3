@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, make_response , current_app
 from service.authentication_service import AuthenticationService
 from repository.user_model import User
 from repository.user_repository import UserRepository
-import bcrypt
+from repository.database import DatabaseConnection
 
 auth_bp = Blueprint('auth', __name__ ,  url_prefix = "/api/auth")
 
@@ -23,31 +23,32 @@ def register():
         if not temp_user_name or not temp_password:
             jsonify({'error': 'username and password are required'}), 400
 
-        hashed_password = temp_password.encode()
-
         payload = User(
             id= None,
             username = temp_user_name,
-            password = hashed_password,
+            password = temp_password,
             role = "Employee",
             )
         
-        user_repo = UserRepository()
+        database_connection = DatabaseConnection()
 
+        user_repo = UserRepository(database_connection)
+
+        user = user_repo.create(payload)
         
         auth_service = get_auth_service()
         token = auth_service.generate_jwt_token(payload)
 
 
         response_data = {
-            'message': 'Login successful',
+            'message': 'Registered successfully',
             'user': {
                 'id': user.id,
                 'username': user.username,
                 'role': user.role
             }
         }
-        response = make_response(jsonify(response_data))
+        response = make_response(jsonify(response_data), 201)
 
         response.set_cookie(
             'jwt_token',
@@ -61,7 +62,7 @@ def register():
         return response
     
     except Exception as e:
-        return jsonify({'error': 'Login failed', 'details': str(e)}), 500
+        return jsonify({'error': 'register failed', 'details': str(e)}), 500
 
 
 
@@ -114,8 +115,13 @@ def login():
         return jsonify({'error': 'Login failed', 'details': str(e)}), 500
 
 
-@auth_bp.route("/logout", method = ["POST"])
+@auth_bp.route("/logout", methods = ["POST"])
 def logout():
+
+    cookies= request.cookies
+    if not cookies:
+        return jsonify({'error': 'already logged out'}), 400
+
     response = make_response(jsonify({'message': 'Logout successful'}))
     
     # Clear the JWT token cookie
@@ -131,7 +137,7 @@ def logout():
     return response
 
 
-@auth_bp.route("/status", method = ["GET"])
+@auth_bp.route("/status", methods = ["GET"])
 def status():
     token = request.cookies.get("jwt_token")
 
