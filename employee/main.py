@@ -6,12 +6,21 @@ import bcrypt
 
 
 from repository import (DatabaseConnection , UserRepository , User, Expense, ExpenseRepository, Approval, ApprovalRepository )
+from service import AuthenticationService
+from api.auth_controller import register
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 db_path = os.getenv("APP_DB_PATH", "../db/main")  # with default
+jwt_secret_key = os.getenv("jwt_secret_key")
+
 
 def create_app():
+
+    app = Flask(__name__, static_folder='static', static_url_path='/static')
+
+    app.config['SECRET_KEY'] = jwt_secret_key
+    app.config['JSON_SORT_KEYS'] = False
 
     db_connection = DatabaseConnection()
     db_connection.initialize_database()
@@ -20,6 +29,8 @@ def create_app():
     expense_repository = ExpenseRepository(db_connection)
     approval_repository = ApprovalRepository(db_connection)
 
+    auth_service = AuthenticationService(user_repo)
+    app.auth_service = auth_service
 
 
 
@@ -89,16 +100,38 @@ if __name__ == '__main__':
     db_connection.initialize_database()
     user_repo = UserRepository(db_connection)
 
-    target_user = user_repo.find_by_id(2)
-    hashed_password = target_user.password
+    # target_user = user_repo.find_by_id(2)
+    # hashed_password = target_user.password
 
-    input_password = "super secret password".encode()
+    # input_password = "super secret password".encode()
 
     # if bcrypt.checkpw(input_password, hashed_password):
     #     print("It Matches!")
     # else:
     #     print("It Does not Match :(")
-    print(bcrypt.checkpw(input_password, hashed_password))
+    # print(bcrypt.checkpw(input_password, hashed_password))
+
+    # auth_service = AuthenticationService(user_repo)
+    # temp = auth_service.get_user_by_id(2)
+    # temp_token = auth_service.generate_jwt_token(temp)
+    # print(f"Before: \n{temp} \n" )
+    
+    # temp_validate = auth_service.validate_jwt_token(temp_token)
+    # print(f"\n After: \n{temp_validate} \n" )
+
+    # temp_get_user = auth_service.get_user_by_token(temp_token)
+    # print(temp_get_user)
+
+    # print(jwt_secret_key)
+    app = Flask(__name__, static_folder='static', static_url_path='/static')
+
+    app.config['SECRET_KEY'] = jwt_secret_key
+    app.config['JSON_SORT_KEYS'] = False
+    print(app.config)
+    
+    
+
+
 
 
 

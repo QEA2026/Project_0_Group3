@@ -11,7 +11,7 @@
 #         print("It Matches!")
 #     else:
 #         print("It Does not Match :(")
-
+import os
 import jwt
 import bcrypt
 from datetime import datetime, timedelta
@@ -19,10 +19,13 @@ from typing import Optional, Dict, Any
 from repository.user_model import User
 from repository.user_repository import UserRepository
 
-class AuthenticateService:
-    def __init__(self, user_repository : UserRepository, jwt_secret_key : str = "expense_manager_abdul_scot"):
+# print(jwt)
+# print(jwt.__file__)
+
+class AuthenticationService:
+    def __init__(self, user_repository : UserRepository, jwt_secret_key : str = None):
         self.user_repository = user_repository
-        self.jwt_secret_key = jwt_secret_key
+        self.jwt_secret_key = jwt_secret_key or os.getenv("jwt_secret_key")
         self.jwt_algorithm = 'HS256'
         self.token_expiry_hours = 24
 
@@ -45,6 +48,7 @@ class AuthenticateService:
             "exp" : datetime.utcnow() + timedelta(hours=self.token_expiry_hours),
             "iat" : datetime.utcnow()
         }
+        # print(payload)
         return jwt.encode(payload, self.jwt_secret_key, algorithm = self.jwt_algorithm)
     
 

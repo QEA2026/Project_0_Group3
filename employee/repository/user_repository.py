@@ -4,8 +4,10 @@ from .database import DatabaseConnection
 import bcrypt
 
 class UserRepository:
+
     
     def __init__(self, db_connection: DatabaseConnection):
+        
         self.db_connection = db_connection
 
     def find_by_username(self, username: str) -> Optional[User]:
