@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from flask import Flask
 import bcrypt
 
-
 from repository import (DatabaseConnection , UserRepository , User, Expense, ExpenseRepository, Approval, ApprovalRepository )
 
 load_dotenv(Path(__file__).parent.parent / ".env")
@@ -19,8 +18,6 @@ def create_app():
     user_repository = UserRepository(db_connection)
     expense_repository = ExpenseRepository(db_connection)
     approval_repository = ApprovalRepository(db_connection)
-
-
 
 
 
@@ -39,8 +36,6 @@ def create_sample_data():
     returned_user = user_repository.create(sample_employee)
     print(f"Created sample employee: \n{returned_user.id} \n{returned_user.username} \n{returned_user.password} \n{returned_user.role} ")
 
-
-     
     
     # sample_expense_repo = ExpenseRepository(db_connection)
 
@@ -73,13 +68,6 @@ def create_sample_data():
     # print(approval_repository.find_expense_by_user_id_with_status(1))
     # print(approval_repository.update_status(1, "approved"))
     # print(approval_repository.find_expense_by_user_id_with_status(1))
-
-    
-
-    
-
-
-
 
 
 if __name__ == '__main__':
