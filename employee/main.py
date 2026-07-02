@@ -94,10 +94,11 @@ if __name__ == '__main__':
 
     input_password = "super secret password".encode()
 
-    if bcrypt.checkpw(input_password, hashed_password):
-        print("It Matches!")
-    else:
-        print("It Does not Match :(")
+    # if bcrypt.checkpw(input_password, hashed_password):
+    #     print("It Matches!")
+    # else:
+    #     print("It Does not Match :(")
+    print(bcrypt.checkpw(input_password, hashed_password))
 
 
 
