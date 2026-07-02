@@ -29,3 +29,5 @@ CREATE TABLE IF NOT EXISTS approvals(
 	FOREIGN KEY (reviewer) REFERENCES expenses(user_id_fk),
 	FOREIGN KEY (expense_id_fk) REFERENCES expenses(expense_id)
 );
+
+SELECT * FROM users;
