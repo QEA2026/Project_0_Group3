@@ -1,6 +1,7 @@
 from typing import Optional
 from .user_model import User
 from .database import DatabaseConnection
+import bcrypt
 
 class UserRepository:
     
@@ -30,10 +31,14 @@ class UserRepository:
         return None
         
     def create(self, user: User) -> User:
+        
+        temp_password = user.password.encode()
+        hashed = bcrypt.hashpw(temp_password, bcrypt.gensalt())
+
         with self.db_connection.get_connection() as conn:
             cursor = conn.execute(
                 "INSERT INTO users (username, password, role) VALUES (?,?,?)",
-                (user.username, user.password, user.role)
+                (user.username, hashed, user.role)
             )
             user.id = cursor.lastrowid
             conn.commit()

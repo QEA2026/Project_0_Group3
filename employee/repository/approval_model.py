@@ -12,10 +12,14 @@ from typing import Optional
 
 @dataclass
 class Approval:
-    approval_id : Optional[int]
+    id : Optional[int]
     expense_id_fk: int
     status: str
     # TODO: will probably change this reviewer to fk
     reviewer: Optional[int]
     comment: Optional[str]
     review_date: Optional[str]
+
+    def __post_init__(self):
+        if self.status not in ["pending", "approved", "denied"]:
+            raise ValueError("status must be 'pending', 'approved', 'denied'")

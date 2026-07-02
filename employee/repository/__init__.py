@@ -4,6 +4,7 @@ from .user_repository import UserRepository
 from .expense_model import Expense
 from .expense_repository import ExpenseRepository
 from .approval_model import Approval
+from .approval_repository import ApprovalRepository
 
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     "Expense",
     "ExpenseRepository",
     "Approval",
+    "ApprovalRepository",
 
 ]
