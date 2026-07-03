@@ -2,11 +2,11 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask
-import bcrypt
+
 
 from repository import (DatabaseConnection , UserRepository , User, Expense, ExpenseRepository, Approval, ApprovalRepository )
 from service import AuthenticationService
-from api.auth_controller import register
+from api import auth_bp
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
@@ -28,8 +28,13 @@ def create_app():
     expense_repository = ExpenseRepository(db_connection)
     approval_repository = ApprovalRepository(db_connection)
 
-    auth_service = AuthenticationService(user_repo)
+    auth_service = AuthenticationService(user_repository)
     app.auth_service = auth_service
+
+    app.register_blueprint(auth_bp)
+
+    return app
+
 
 
 def create_sample_data():
@@ -84,9 +89,9 @@ def create_sample_data():
 if __name__ == '__main__':
     # app = create_app()
     # sample = create_sample_data()
-    db_connection = DatabaseConnection()
-    db_connection.initialize_database()
-    user_repo = UserRepository(db_connection)
+    # db_connection = DatabaseConnection()
+    # db_connection.initialize_database()
+    # user_repo = UserRepository(db_connection)
 
     # target_user = user_repo.find_by_id(2)
     # hashed_password = target_user.password
@@ -111,11 +116,27 @@ if __name__ == '__main__':
     # print(temp_get_user)
 
     # print(jwt_secret_key)
-    app = Flask(__name__, static_folder='static', static_url_path='/static')
+    
+    app = create_app()
 
-    app.config['SECRET_KEY'] = jwt_secret_key
-    app.config['JSON_SORT_KEYS'] = False
-    print(app.config)
+    print("Starting Employee Expense Management API...")
+    print("Available endpoints:")
+    print("  POST /api/auth/login - Employee login")
+    print("  POST /api/auth/login - Register Employee")
+    print("  POST /api/auth/logout - Employee logout")
+    print("  GET  /api/auth/status - Check auth status")
+    print("  POST /api/expenses - Submit new expense")
+    print("  GET  /api/expenses - Get all user expenses")
+    print("  GET  /api/expenses/<id> - Get specific expense")
+    print("  PUT  /api/expenses/<id> - Update expense (if pending)")
+    print("  DELETE /api/expenses/<id> - Delete expense (if pending)")
+    print("  GET  /health - Health check")
+    print("  GET  /api - API info")
+    print()
+    print("Sample credentials:")
+    print("  Employee: employee1/password123")
+
+    app.run(host='0.0.0.0', port=5000)
     
     
 
