@@ -14,6 +14,7 @@ public class ConnectionUtil {
         catch (ClassNotFoundException e){
             e.printStackTrace();
         }
+        
         Dotenv dotenv = Dotenv.configure().directory("..").load();
         String dbPath = dotenv.get("APP_DB_PATH");
 

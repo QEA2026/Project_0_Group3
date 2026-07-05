@@ -31,3 +31,5 @@ CREATE TABLE IF NOT EXISTS approvals(
 );
 
 SELECT * FROM users;
+SELECT * FROM expenses;
+SELECT * FROM approvals;

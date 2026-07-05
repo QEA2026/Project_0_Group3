@@ -47,7 +47,7 @@ class ApprovalRepository:
                 approval = Approval(id=None, expense_id_fk=row["id"], status=row["status"], reviewer=None, comment=row["comment"], review_date=["review_date"])
                 results.append((expense, approval))
             return results
-        
+    
     def update_status(self, expense_id: int, status: str, reviewer: Optional[int] = None, 
                      comment: Optional[str] = None, review_date: Optional[str] = None) -> bool:
         

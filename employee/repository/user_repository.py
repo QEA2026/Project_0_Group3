@@ -43,6 +43,7 @@ class UserRepository:
                 (user.username, hashed, user.role)
             )
             user.id = cursor.lastrowid
+            
             conn.commit()
 
         return user
