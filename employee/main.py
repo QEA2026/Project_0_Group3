@@ -5,8 +5,8 @@ from flask import Flask
 
 
 from repository import (DatabaseConnection , UserRepository , User, Expense, ExpenseRepository, Approval, ApprovalRepository )
-from service import AuthenticationService
-from api import auth_bp
+from service import AuthenticationService, ExpenseService
+from api import auth_bp, expense_bp
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
@@ -31,7 +31,11 @@ def create_app():
     auth_service = AuthenticationService(user_repository)
     app.auth_service = auth_service
 
+    expense_service = ExpenseService(expense_repository, approval_repository)
+    app.expense_service = expense_service
+
     app.register_blueprint(auth_bp)
+    app.register_blueprint(expense_bp)
 
     return app
 

@@ -19,15 +19,15 @@ class ExpenseService:
         if not description.strip():
             raise ValueError("Description is required")
         
-        if not date:
-            date = datetime.now().strftime('%Y-%m-%d')
+        if not expense_date:
+             expense_date = datetime.now().strftime('%m-%d-%Y')
 
         expense = Expense(
             id=None,
-            user_id=user_id,
+            user_id_fk=user_id,
             amount=amount,
             description=description.strip(),
-            date=date
+            expense_date= expense_date
         )
         
         return self.expense_repository.create(expense)
@@ -38,7 +38,7 @@ class ExpenseService:
     def get_expense_by_id(self, expense_id: int, user_id: int) -> Optional[Expense]:
         """Get an expense by ID, ensuring it belongs to the user."""
         expense = self.expense_repository.find_by_id(expense_id)
-        if expense and expense.user_id == user_id:
+        if expense and expense.user_id_fk == user_id:
             return expense
         return None
     
@@ -46,13 +46,13 @@ class ExpenseService:
         """Get expense with its approval status, ensuring it belongs to the user."""
         expense = self.get_expense_by_id(expense_id, user_id)
         if expense:
-            approval = self.approval_repository.find_by_expense_id(expense_id)
+            approval = self.approval_repository.find_expense_by_id(expense_id)
             if approval:
                 return expense, approval
             
         return None
     
-    def update_expense(self, expense_id: int, user_id: int, amount: float, description: str, date: str) -> Optional[Expense]:
+    def update_expense(self, expense_id: int, user_id: int, amount: float, description: str, expense_date: str) -> Optional[Expense]:
         """Update an existing expense if it's still pending."""
         # Get expense and check ownership and status
         result = self.get_expense_with_status(expense_id, user_id)
@@ -74,7 +74,7 @@ class ExpenseService:
         # Update the expense
         expense.amount = amount
         expense.description = description.strip()
-        expense.date = date
+        expense.expense_date = expense_date
         
         return self.expense_repository.update(expense)
     
