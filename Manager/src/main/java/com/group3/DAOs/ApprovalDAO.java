@@ -11,6 +11,7 @@ import java.util.List;
 
 
 import com.group3.models.Approval;
+import com.group3.models.EmployeeSummary;
 import com.group3.models.Expense;
 import com.group3.models.ExpenseWithApproval;
 import com.group3.utils.ConnectionUtil;
@@ -35,7 +36,7 @@ public class ApprovalDAO implements ApprovalDAOInterface{
         
             if (rs.next()){
                 ExpenseWithApproval ea = new ExpenseWithApproval(
-                    new Expense(rs.getInt("expense_id"), rs.getFloat("amount"), rs.getString("description"), rs.getString("expense_date"), rs.getInt("user_id_fk")),
+                    new Expense(rs.getInt("expense_id"), rs.getFloat("amount"), rs.getString("description"), rs.getString("expense_date"), rs.getInt("user_id_fk"), rs.getString("category")),
                     new Approval(rs.getInt("id"), rs.getInt("expense_id_fk"), rs.getString("status"), rs.getInt("reviewer"), rs.getString("comment"), rs.getString("review_date"))
                 );
                 return ea;
@@ -69,14 +70,15 @@ public class ApprovalDAO implements ApprovalDAOInterface{
                         rs.getFloat("amount"),
                         rs.getString("description"),
                         rs.getString("expense_date"),
-                        rs.getInt("user_id_fk")),
+                        rs.getInt("user_id_fk"),
+                        rs.getString("category")),
 
                     new Approval(rs.getInt("approval_id"),
                         rs.getInt("expense_id_fk"),
                         rs.getString("status"),
-                        rs.getInt("reviewer"), 
+                        rs.getInt("reviewer"),
                         rs.getString("comment"),
-                        rs.getString("review_date")))); 
+                        rs.getString("review_date"))));
             }
 
             return ea;
@@ -109,7 +111,8 @@ public class ApprovalDAO implements ApprovalDAOInterface{
                         rs.getFloat("amount"),
                         rs.getString("description"),
                         rs.getString("expense_date"),
-                        rs.getInt("user_id_fk")),
+                        rs.getInt("user_id_fk"),
+                        rs.getString("category")),
 
                         new Approval(rs.getInt("id"),
                         rs.getInt("expense_id_fk"),
@@ -152,7 +155,90 @@ public class ApprovalDAO implements ApprovalDAOInterface{
                         rs.getFloat("amount"),
                         rs.getString("description"),
                         rs.getString("expense_date"),
-                        rs.getInt("user_id_fk")),
+                        rs.getInt("user_id_fk"),
+                        rs.getString("category")),
+
+                    new Approval(rs.getInt("approval_id"),
+                        rs.getInt("expense_id_fk"),
+                        rs.getString("status"),
+                        rs.getInt("reviewer"),
+                        rs.getString("comment"),
+                        rs.getString("review_date"))));
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return ea;
+    }
+
+    @Override
+    public List<EmployeeSummary> getSpendingByEmployee() {
+        List<EmployeeSummary> report = new ArrayList<>();
+
+        try(Connection conn = ConnectionUtil.getConnection()){
+
+            String sql = """
+                    SELECT u.username,
+                           COUNT(*) AS total_expenses,
+                           SUM(e.amount) AS total_amount,
+                           SUM(CASE WHEN a.status = 'approved' THEN 1 ELSE 0 END) AS approved,
+                           SUM(CASE WHEN a.status = 'denied'   THEN 1 ELSE 0 END) AS denied,
+                           SUM(CASE WHEN a.status = 'pending'  THEN 1 ELSE 0 END) AS pending
+                    FROM expenses e
+                    INNER JOIN users u     ON e.user_id_fk = u.id
+                    INNER JOIN approvals a ON a.expense_id_fk = e.id
+                    GROUP BY u.id
+                    ORDER BY total_amount DESC;
+                    """;
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                report.add(new EmployeeSummary(
+                        rs.getString("username"),
+                        rs.getInt("total_expenses"),
+                        rs.getDouble("total_amount"),
+                        rs.getInt("approved"),
+                        rs.getInt("denied"),
+                        rs.getInt("pending")));
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return report;
+    }
+
+    @Override
+    public List<ExpenseWithApproval> getExpenseApprovalsBetweenDates(String startDate, String endDate) {
+        List<ExpenseWithApproval> ea = new ArrayList<>();
+
+        try(Connection conn = ConnectionUtil.getConnection()){
+
+            String sql = """
+                    SELECT a.status, a.id as approval_id, e.id as expense_id,* FROM approvals a
+                    INNER JOIN expenses e ON a.expense_id_fk = e.id
+                    WHERE e.expense_date BETWEEN ? AND ?
+                    ORDER BY e.expense_date;
+                    """;
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                ea.add(new ExpenseWithApproval(
+                    new Expense(rs.getInt("expense_id"),
+                        rs.getFloat("amount"),
+                        rs.getString("description"),
+                        rs.getString("expense_date"),
+                        rs.getInt("user_id_fk"),
+                        rs.getString("category")),
 
                     new Approval(rs.getInt("approval_id"),
                         rs.getInt("expense_id_fk"),

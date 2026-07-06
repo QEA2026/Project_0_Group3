@@ -7,17 +7,23 @@ public class Expense {
     private String description;
     private String expense_date;
     private int user_id_fk;
+    private String category;
 
     public Expense() {
     }
-    
+
 
     public Expense(int id, float amount, String description, String expense_date, int user_id_fk) {
+        this(id, amount, description, expense_date, user_id_fk, "Other");
+    }
+
+    public Expense(int id, float amount, String description, String expense_date, int user_id_fk, String category) {
         this.id = id;
         this.amount = amount;
         this.description = description;
         this.expense_date = expense_date;
         this.user_id_fk = user_id_fk;
+        this.category = category;
     }
 
     
@@ -52,14 +58,21 @@ public class Expense {
     public void setUser_id_fk(int user_id_fk) {
         this.user_id_fk = user_id_fk;
     }
+    public String getCategory() {
+        return category;
+    }
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     @Override
     public String toString() {
-        return "Expense [id=" + id + 
-        ", amount=" + amount + 
-        ", description=" + description + 
-        ", expense_date="+ expense_date + 
-        ", user_id_fk=" + user_id_fk + "]";
+        return "Expense [id=" + id +
+        ", amount=" + amount +
+        ", description=" + description +
+        ", expense_date="+ expense_date +
+        ", user_id_fk=" + user_id_fk +
+        ", category=" + category + "]";
     }
 
 }

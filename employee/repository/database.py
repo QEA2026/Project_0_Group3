@@ -26,8 +26,6 @@ class DatabaseConnection:
     def initialize_database(self):
         with self.get_connection() as conn:
 
-            
-
             # conn.execute('''
             #     DROP TABLE IF EXISTS approvals;
             # ''')

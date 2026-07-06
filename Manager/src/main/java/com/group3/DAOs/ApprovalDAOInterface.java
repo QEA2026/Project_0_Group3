@@ -3,6 +3,7 @@ package com.group3.DAOs;
 import java.util.List;
 
 import com.group3.models.Approval;
+import com.group3.models.EmployeeSummary;
 import com.group3.models.ExpenseWithApproval;
 
 public interface ApprovalDAOInterface {
@@ -18,6 +19,12 @@ public interface ApprovalDAOInterface {
 
     // get expense by id returns record(expense, approval)
     ExpenseWithApproval getExpenseApprovalByExpenseId(int expense_id);
+
+    // per-employee totals and status counts for reporting
+    List<EmployeeSummary> getSpendingByEmployee();
+
+    // expenses whose expense_date falls in [startDate, endDate], ISO format
+    List<ExpenseWithApproval> getExpenseApprovalsBetweenDates(String startDate, String endDate);
 
     
      
