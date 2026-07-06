@@ -19,6 +19,8 @@ class DatabaseConnection:
         """Connect to the path saved in the above (__init__) function"""
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
+        # SQLite ignores FOREIGN KEY constraints unless each connection opts in
+        conn.execute("PRAGMA foreign_keys = ON")
         return conn
     
     def initialize_database(self):

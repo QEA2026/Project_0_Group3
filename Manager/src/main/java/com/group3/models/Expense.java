@@ -10,6 +10,7 @@ public class Expense {
 
     public Expense() {
     }
+    
 
     public Expense(int id, float amount, String description, String expense_date, int user_id_fk) {
         this.id = id;
@@ -18,6 +19,8 @@ public class Expense {
         this.expense_date = expense_date;
         this.user_id_fk = user_id_fk;
     }
+
+    
 
     public int getId() {
         return id;

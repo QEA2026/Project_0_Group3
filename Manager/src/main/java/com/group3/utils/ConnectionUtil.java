@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.sqlite.SQLiteConfig;
+
 public class ConnectionUtil {
     public static Connection getConnection() throws SQLException{
         try{
@@ -14,10 +16,14 @@ public class ConnectionUtil {
         catch (ClassNotFoundException e){
             e.printStackTrace();
         }
-        
+
         Dotenv dotenv = Dotenv.configure().directory("..").load();
         String dbPath = dotenv.get("APP_DB_PATH");
 
-        return DriverManager.getConnection(dbPath);
+        // SQLite ignores FOREIGN KEY constraints unless each connection opts in
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+
+        return DriverManager.getConnection("jdbc:sqlite:" + dbPath, config.toProperties());
     }
 }
