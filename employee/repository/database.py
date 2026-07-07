@@ -8,7 +8,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 class DatabaseConnection:
     def __init__(self, db_path: Optional[str] = None):
         """get and save the DB Path"""
-        raw_path = db_path or os.getenv('APP_DB_PATH', "./db/main.db")
+        raw_path = db_path or os.getenv('APP_DB_PATH', "./db/main")
         resolved = Path(raw_path)
         if not resolved.is_absolute():
             resolved = (PROJECT_ROOT / resolved).resolve()

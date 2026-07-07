@@ -34,7 +34,7 @@ class ExpenseService:
             raise ValueError("Description is required")
         
         if not expense_date:
-             expense_date = datetime.now().strftime('%m-%d-%Y')
+             expense_date = datetime.now().strftime('%Y-%m-%d')
         
         category = self._validate_category(category)
 

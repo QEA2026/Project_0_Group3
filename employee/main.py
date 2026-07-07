@@ -1,6 +1,7 @@
 import os
 from threading import Thread
 from getpass import getpass
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import requests
@@ -245,6 +246,26 @@ def prompt_category(default: Optional[str] = None) -> str:
         print("Please choose a valid category.")
 
 
+def prompt_optional_date(prompt: str, default: Optional[str] = None) -> Optional[str]:
+    while True:
+        label = prompt
+        if default:
+            label += f" [{default}]"
+        date_input = input(f"{label}: ").strip()
+
+        if not date_input and default is not None:
+            return default
+
+        if date_input.lower() in ("", "none", "null"):
+            return None
+
+        try:
+            datetime.strptime(date_input, "%Y-%m-%d")
+            return date_input
+        except ValueError:
+            print("Please enter the date in YYYY-MM-DD format, or press Enter to auto-generate.")
+
+
 def prompt_password(prompt: str) -> str:
     if os.name != "nt":
         return getpass(prompt)
@@ -379,8 +400,7 @@ def submit_expense_flow(client: EmployeeApiClient) -> None:
     amount = prompt_float("Amount: ")
     description = prompt_required("Description: ")
     category = prompt_category()
-    date_input = input("Date (press Enter to auto-generate): ").strip()
-    date = None if date_input.lower() in ("", "none", "null") else date_input
+    date = prompt_optional_date("Date YYYY-MM-DD (press Enter to auto-generate)")
     if date is None:
         print("No date entered. The API will auto-generate it.")
 
@@ -421,7 +441,7 @@ def edit_expense_flow(client: EmployeeApiClient) -> None:
     amount = prompt_float(f"Amount [{current_amount:.2f}]: ", default=current_amount)
     description = input(f"Description [{current_description}]: ").strip() or current_description
     category = prompt_category(current_category)
-    date = input(f"Date [{current_date}]: ").strip() or current_date
+    date = prompt_optional_date("Date YYYY-MM-DD", current_date)
 
     result = client.update_expense(expense_id, amount, description, date, category)
     updated = result.get("expense", {})
