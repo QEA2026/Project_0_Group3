@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS expenses(
 	amount REAL,
 	description TEXT,
 	expense_date TEXT,
+	category TEXT NOT NULL DEFAULT 'Other'
+		CHECK (category IN ('Travel', 'Lodging', 'Meals', 'Office Supplies', 'Software', 'Training', 'Other')),
 	user_id_fk INTEGER NOT NULL,
 	FOREIGN KEY (user_id_fk) REFERENCES users(user_id));
 

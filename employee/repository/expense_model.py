@@ -6,6 +6,7 @@ from typing import Optional
 #                     amount REAL,
 #                     description TEXT,
 #                     expense_date TEXT,
+#                     category TEXT,
 #                     user_id_fk INTEGER NOT NULL,
 #                     FOREIGN KEY (user_id_fk) REFERENCES users(user_id)
 #                 )
@@ -16,5 +17,6 @@ class Expense:
     amount: float
     description: str
     expense_date: str
+    category: str
     user_id_fk: int
 
