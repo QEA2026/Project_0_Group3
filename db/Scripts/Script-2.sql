@@ -106,3 +106,9 @@ SELECT (SELECT COUNT(*) FROM expenses)  AS expense_count,
        (SELECT COUNT(*) FROM approvals) AS approval_count,
        (SELECT COUNT(*) FROM expenses e LEFT JOIN approvals a
             ON a.expense_id_fk = e.id WHERE a.id IS NULL) AS invisible_expenses;
+
+-- ---- handy queries (run individually with Ctrl+Enter) ----
+
+SELECT * FROM users;
+SELECT * FROM expenses;
+SELECT * FROM approvals;
