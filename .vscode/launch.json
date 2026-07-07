@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launcher",
+            "request": "launch",
+            "mainClass": "com.group3.Launcher",
+            "projectName": "Manager",
+            "cwd": "${workspaceFolder}/Manager"
+        }
+    ]
+}
