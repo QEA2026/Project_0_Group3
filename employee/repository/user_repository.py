@@ -4,8 +4,7 @@ from .database import DatabaseConnection
 import bcrypt
 
 class UserRepository:
-
-    
+        
     def __init__(self, db_connection: DatabaseConnection):
         
         self.db_connection = db_connection
@@ -43,6 +42,7 @@ class UserRepository:
                 (user.username, hashed, user.role)
             )
             user.id = cursor.lastrowid
+            
             conn.commit()
 
         return user
