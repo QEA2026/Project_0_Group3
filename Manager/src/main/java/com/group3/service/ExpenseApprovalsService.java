@@ -86,7 +86,7 @@ public class ExpenseApprovalsService {
         a.setStatus(decision.toLowerCase());
         a.setReviewer_id(managerId);
         a.setComment(comment.trim());
-        a.setReview_date(java.time.LocalDateTime.now().toString());
+        a.setReview_date(java.time.LocalDate.now().toString());
         return approvalDAO.updateApprovalById(a);
     }
 
