@@ -60,6 +60,7 @@ The system uses a **shared SQLite database** to ensure consistent data access an
 |amount|REAL|Expense amount|
 |description|TEXT|Reason for expense request|
 |date|TEXT|Date of expense|
+|category|TEXT|One of: Travel, Lodging, Meals, Office Supplies, Software, Training, Other|
 
 ### `approvals`
 |Column|Type|Description|

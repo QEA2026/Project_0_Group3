@@ -7,6 +7,7 @@ from .database import DatabaseConnection
 #                     amount REAL,
 #                     description TEXT,
 #                     expense_date TEXT,
+#                     category TEXT,
 #                     user_id_fk INTEGER NOT NULL, FOREIGN KEY (user_id_fk) REFERENCES users(id)
 #                 )
 
@@ -20,8 +21,8 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute(
-                "INSERT INTO expenses(amount, description, expense_date, user_id_fk) VALUES (?,?,?,?)",
-                (expense.amount, expense.description, expense.expense_date, expense.user_id_fk)
+                "INSERT INTO expenses(amount, description, expense_date, category, user_id_fk) VALUES (?,?,?,?,?)",
+                (expense.amount, expense.description, expense.expense_date, expense.category, expense.user_id_fk)
             )
             expense.id = cursor.lastrowid
 
@@ -39,14 +40,14 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute(
-                "SELECT id, amount, description, expense_date, user_id_fk FROM expenses WHERE id = ?",
+                "SELECT id, amount, description, expense_date, category, user_id_fk FROM expenses WHERE id = ?",
                 (expense_id,)
             )
 
             row = cursor.fetchone()
 
             if row:
-                return Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=row["user_id_fk"])
+                return Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], category=row["category"], user_id_fk=row["user_id_fk"])
             
             return None
         
@@ -57,12 +58,12 @@ class ExpenseRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute(
-                "SELECT id, amount, description, expense_date, user_id_fk FROM expenses WHERE user_id_fk = ?",
+                "SELECT id, amount, description, expense_date, category, user_id_fk FROM expenses WHERE user_id_fk = ?",
                 (user_id,)
             )
 
             for row in cursor.fetchall():
-                expenses.append(Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=row["user_id_fk"]))
+                expenses.append(Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], category=row["category"], user_id_fk=row["user_id_fk"]))
         
         return expenses
     
@@ -70,8 +71,8 @@ class ExpenseRepository:
 
         with self.db_connection.get_connection() as conn:
             conn.execute(
-                "UPDATE expenses SET amount = ?, description = ?, expense_date = ? WHERE id = ?",
-                (expense.amount , expense.description, expense.expense_date , expense.id)
+                "UPDATE expenses SET amount = ?, description = ?, expense_date = ?, category = ? WHERE id = ?",
+                (expense.amount , expense.description, expense.expense_date, expense.category, expense.id)
             )
 
             conn.commit()

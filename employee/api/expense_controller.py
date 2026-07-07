@@ -7,6 +7,7 @@ expense_bp = Blueprint('expense', __name__, url_prefix = "/api/expense")
 def get_expense_service() -> ExpenseService:
     return current_app.expense_service
 
+
 @expense_bp.route("/submit", methods=['POST'])
 @require_employee_auth
 def submit_expense():
@@ -18,6 +19,7 @@ def submit_expense():
 
         amount = data.get('amount')
         description = data.get('description')
+        category = data.get('category') or "Other"
 
 
         date = data.get("date") or None
@@ -37,7 +39,8 @@ def submit_expense():
             user_id= current_user.id,
             amount= amount,
             description = description,
-            expense_date = date
+            expense_date = date,
+            category = category
         )
 
         return jsonify({
@@ -47,6 +50,7 @@ def submit_expense():
                 'amount': expense.amount,
                 'description': expense.description,
                 'date': expense.expense_date,
+                'category': expense.category,
                 'status': 'pending'
             }
         }), 201 
@@ -79,6 +83,7 @@ def get_expenses():
                 'amount': expense.amount,
                 'description': expense.description,
                 'date': expense.expense_date,
+                'category': expense.category,
                 'status': approval.status,
                 'comment': approval.comment,
                 'review_date': approval.review_date
@@ -112,6 +117,7 @@ def get_expense(expense_id):
                 'amount': expense.amount,
                 'description': expense.description,
                 'date': expense.expense_date,
+                'category': expense.category,
                 'status': approval.status,
                 'comment': approval.comment,
                 'review_date': approval.review_date
@@ -130,9 +136,10 @@ def update_expense(id):
         amount = data.get('amount')
         description = data.get('description')
         date = data.get('date') 
+        category = data.get('category')
 
-        if amount is None and description is None and date is None:
-            return jsonify({'error': 'One of amount, description, and date is required'}), 400
+        if amount is None and description is None and date is None and category is None:
+            return jsonify({'error': 'One of amount, description, date, and category is required'}), 400
 
         try:
             amount = float(amount)
@@ -152,13 +159,17 @@ def update_expense(id):
 
         if date is None:
             date = target_expense.expense_date
+        
+        if category is None:
+            category = target_expense.category
 
         updated_expense = expense_service.update_expense(
             expense_id = id,
             user_id=current_user.id,
             amount=amount,
             description=description,
-            expense_date=date
+            expense_date=date,
+            category=category
         )
         
         if not updated_expense:
@@ -170,7 +181,8 @@ def update_expense(id):
                 'id': updated_expense.id,
                 'amount': updated_expense.amount,
                 'description': updated_expense.description,
-                'date': updated_expense.expense_date
+                'date': updated_expense.expense_date,
+                'category': updated_expense.category
             }
         })
      

@@ -26,7 +26,7 @@ class ApprovalRepository:
             )
             row = cursor.fetchone()
             if row:
-                return Approval(id=row["id"], expense_id_fk=row["expense_id_fk"], status=row["status"], reviewer=row["reviewer"], comment=row["comment"], review_date=row["review_date"] )
+                return Approval(id=row["id"], expense_id_fk=row["expense_id_fk"], status=row["status"].lower(), reviewer=row["reviewer"], comment=row["comment"], review_date=row["review_date"] )
         return None
     
     def find_expense_by_user_id_with_status(self, user_id : int) -> List[tuple]:
@@ -35,7 +35,18 @@ class ApprovalRepository:
         with self.db_connection.get_connection() as conn:
 
             cursor = conn.execute('''
-                SELECT e.id, e.amount, e.description, e.expense_date, a.status, a.comment, a.review_date
+                SELECT
+                    e.id,
+                    e.amount,
+                    e.description,
+                    e.expense_date,
+                    e.category,
+                    a.id AS approval_id,
+                    a.expense_id_fk,
+                    a.status,
+                    a.reviewer,
+                    a.comment,
+                    a.review_date
                 FROM expenses e
                 JOIN approvals a ON e.id = a.expense_id_fk
                 WHERE e.user_id_fk = ?
@@ -43,8 +54,15 @@ class ApprovalRepository:
             ''',(user_id,))
 
             for row in cursor.fetchall():
-                expense = Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], user_id_fk=user_id)
-                approval = Approval(id=None, expense_id_fk=row["id"], status=row["status"], reviewer=None, comment=row["comment"], review_date=["review_date"])
+                expense = Expense(id=row["id"], amount=row["amount"], description=row["description"], expense_date=row["expense_date"], category=row["category"], user_id_fk=user_id)
+                approval = Approval(
+                    id=row["approval_id"],
+                    expense_id_fk=row["expense_id_fk"],
+                    status=row["status"].lower(),
+                    reviewer=row["reviewer"],
+                    comment=row["comment"],
+                    review_date=row["review_date"]
+                )
                 results.append((expense, approval))
             return results
     

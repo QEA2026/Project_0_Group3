@@ -51,10 +51,20 @@ class DatabaseConnection:
                     amount REAL,
                     description TEXT,
                     expense_date TEXT,
+                    category TEXT NOT NULL DEFAULT 'Other' CHECK (category IN ('Travel', 'Lodging', 'Meals', 'Office Supplies', 'Software', 'Training', 'Other')),
                     user_id_fk INTEGER NOT NULL,
                     FOREIGN KEY (user_id_fk) REFERENCES users(id)
                 )
             ''')
+
+            expense_columns = conn.execute("PRAGMA table_info(expenses)").fetchall()
+            expense_column_names = {column["name"] for column in expense_columns}
+            if "category" not in expense_column_names:
+                conn.execute('''
+                    ALTER TABLE expenses
+                    ADD COLUMN category TEXT NOT NULL DEFAULT 'Other'
+                    CHECK (category IN ('Travel', 'Lodging', 'Meals', 'Office Supplies', 'Software', 'Training', 'Other'))
+                ''')
 
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS approvals(
