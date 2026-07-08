@@ -313,11 +313,34 @@ def print_expenses(expenses: List[Dict[str, Any]]) -> None:
         )
     )
 
+    columns = {
+        "id": 6,
+        "amount": 13,
+        "status": 12,
+        "date": 14,
+        "category": 20,
+        "description": 34,
+        "review_date": 16,
+        "comment": 44,
+    }
+    gap = "  "
+    header = (
+        f"{'ID':<{columns['id']}}"
+        f"{gap}{'Amount':>{columns['amount']}}"
+        f"{gap}{'Status':<{columns['status']}}"
+        f"{gap}{'Date':<{columns['date']}}"
+        f"{gap}{'Category':<{columns['category']}}"
+        f"{gap}{'Description':<{columns['description']}}"
+        f"{gap}{'Review Date':<{columns['review_date']}}"
+        f"{gap}{'Comment':<{columns['comment']}}"
+    )
+
     print()
-    print(f"{'ID':<5} {'Amount':>10} {'Status':<10} {'Date':<12} {'Category':<16} {'Description':<24} {'Comment':<20} Review Date")
-    print("-" * 118)
+    print(header)
+    print("-" * len(header))
     for expense in expenses:
         amount = float(expense.get("amount", 0))
+        amount_text = f"${amount:.2f}"
         status = expense.get("status") or "N/A"
         date = expense.get("date") or "N/A"
         category = expense.get("category") or "N/A"
@@ -325,14 +348,14 @@ def print_expenses(expenses: List[Dict[str, Any]]) -> None:
         comment = expense.get("comment") or "N/A"
         review_date = expense.get("review_date") or "N/A"
         print(
-            f"{expense.get('id', ''):<5} "
-            f"${amount:>9.2f} "
-            f"{str(status):<10} "
-            f"{str(date):<12} "
-            f"{str(category):<16} "
-            f"{str(description):<24} "
-            f"{str(comment):<20} "
-            f"{review_date}"
+            f"{str(expense.get('id', '')):<{columns['id']}}"
+            f"{gap}{amount_text:>{columns['amount']}}"
+            f"{gap}{str(status):<{columns['status']}}"
+            f"{gap}{str(date):<{columns['date']}}"
+            f"{gap}{str(category):<{columns['category']}}"
+            f"{gap}{str(description):<{columns['description']}}"
+            f"{gap}{str(review_date):<{columns['review_date']}}"
+            f"{gap}{str(comment):<{columns['comment']}}"
         )
     print()
 
@@ -344,7 +367,8 @@ def login_flow(client: EmployeeApiClient) -> bool:
         try:
             result = client.login(username, password)
             user = result.get("user", {})
-            print(f"Logged in as {user.get('username')} ({user.get('role')}).")
+            print()
+            print(f"Hi {user.get('username')}!")
             return True
         except RuntimeError as exc:
             print(f"Login failed: {exc}")
@@ -368,7 +392,8 @@ def register_flow(client: EmployeeApiClient) -> bool:
     try:
         result = client.register(username, password)
         user = result.get("user", {})
-        print(f"Registered and logged in as {user.get('username')} ({user.get('role')}).")
+        print()
+        print(f"Hi {user.get('username')}!")
         return True
     except RuntimeError as exc:
         print(f"Register failed: {exc}")
@@ -529,12 +554,14 @@ def menu_loop(client: EmployeeApiClient) -> None:
     }
 
     while True:
+        print()
         print("1. Submit Expense")
         print("2. View My Expenses")
         print("3. Edit Pending Expense")
         print("4. Delete Pending Expense")
         print("5. View Approved/Denied History")
         print("6. Logout")
+        print()
         choice = input("Choose an option: ").strip()
 
         if choice == "6":
@@ -594,7 +621,9 @@ def start_api_server() -> Optional[ApiServerThread]:
     app = create_app()
     server = ApiServerThread(app)
     server.start()
+    print()
     print("Employee Expense Management API started on port 5000.")
+    print()
     return server
 
 
