@@ -33,8 +33,6 @@ public class Launcher {
 
         for(int attempts = 0; attempts < 3 && manager == null; attempts++){
             System.out.print("Username: " );
-            
-            
             String username = scanner.nextLine().trim();
             String password = readPassword(scanner, "Password: ");
 
