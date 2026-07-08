@@ -1,5 +1,10 @@
 package com.group3;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,10 +32,9 @@ public class Launcher {
         System.out.println("=== Manager Portal Login ===");
 
         for(int attempts = 0; attempts < 3 && manager == null; attempts++){
-            System.out.println("Username:" );
+            System.out.print("Username: " );
             String username = scanner.nextLine().trim();
-            System.out.println("Password: ");
-            String password = scanner.nextLine();
+            String password = readPassword(scanner, "Password: ");
 
             try{
                 manager = userService.login(username, password);
@@ -46,7 +50,7 @@ public class Launcher {
 
 
 
-        System.out.println("Welcome, " + manager.getUsername() + "!");
+        System.out.println("\nWelcome, " + manager.getUsername() + "!");
         runManagerMenu(scanner, manager, approvalService);    
         scanner.close();
         
@@ -167,13 +171,17 @@ public class Launcher {
             return;
         }
 
-        System.out.println("\n" + centered("--- Spending by Category ---", 40));
-        System.out.printf("%-15s | %8s | %10s%n", "Category", "Expenses", "Total");
-        System.out.println("-".repeat(40));
+        StringBuilder out = new StringBuilder();
+        out.append(centered("--- Spending by Category ---", 40)).append(System.lineSeparator());
+        out.append(String.format("%-15s | %8s | %10s%n", "Category", "Expenses", "Total"));
+        out.append("-".repeat(40)).append(System.lineSeparator());
         for (CategoryTotal row : report){
-            System.out.printf("%-15s | %8d | $%9.2f%n",
-                row.category(), row.expenseCount(), row.totalAmount());
+            out.append(String.format("%-15s | %8d | $%9.2f%n",
+                row.category(), row.expenseCount(), row.totalAmount()));
         }
+        System.out.println();
+        System.out.print(out);
+        saveReport("spending-by-category", out.toString());
     }
 
     private static void showEmployeeReport(ExpenseApprovalsService service){
@@ -184,15 +192,19 @@ public class Launcher {
             return;
         }
 
-        System.out.println("\n" + centered("--- Spending by Employee ---", 70));
-        System.out.printf("%-15s | %8s | %10s | %8s | %6s | %7s%n",
-            "Employee", "Expenses", "Total", "Approved", "Denied", "Pending");
-        System.out.println("-".repeat(70));
+        StringBuilder out = new StringBuilder();
+        out.append(centered("--- Spending by Employee ---", 70)).append(System.lineSeparator());
+        out.append(String.format("%-15s | %8s | %10s | %8s | %6s | %7s%n",
+            "Employee", "Expenses", "Total", "Approved", "Denied", "Pending"));
+        out.append("-".repeat(70)).append(System.lineSeparator());
         for (EmployeeSummary row : report){
-            System.out.printf("%-15s | %8d | $%9.2f | %8d | %6d | %7d%n",
+            out.append(String.format("%-15s | %8d | $%9.2f | %8d | %6d | %7d%n",
                 fit(row.username(), 15), row.totalExpenses(), row.totalAmount(),
-                row.approved(), row.denied(), row.pending());
+                row.approved(), row.denied(), row.pending()));
         }
+        System.out.println();
+        System.out.print(out);
+        saveReport("spending-by-employee", out.toString());
     }
 
     private static void showDateReport(Scanner scanner, ExpenseApprovalsService service){
@@ -208,21 +220,38 @@ public class Launcher {
             return;
         }
 
-        System.out.println("\n" + centered("--- Expenses " + start + " to " + end + " ---", 84));
-        System.out.printf("%-4s | %-10s | %9s | %-25s | %-15s | %-8s%n",
-            "ID", "Date", "Amount", "Description", "Category", "Status");
-        System.out.println("-".repeat(84));
+        StringBuilder out = new StringBuilder();
+        out.append(centered("--- Expenses " + start + " to " + end + " ---", 84)).append(System.lineSeparator());
+        out.append(String.format("%-4s | %-10s | %9s | %-25s | %-15s | %-8s%n",
+            "ID", "Date", "Amount", "Description", "Category", "Status"));
+        out.append("-".repeat(84)).append(System.lineSeparator());
         double total = 0;
         for (ExpenseWithApproval ea : rows){
             Expense e = ea.expense();
-            System.out.printf("%-4d | %-10s | $%8.2f | %-25s | %-15s | %-8s%n",
+            out.append(String.format("%-4d | %-10s | $%8.2f | %-25s | %-15s | %-8s%n",
                 e.getId(), e.getExpense_date(), e.getAmount(),
                 fit(e.getDescription(), 25), fit(e.getCategory(), 15),
-                ea.approval().getStatus());
+                ea.approval().getStatus()));
             total += e.getAmount();
         }
-        System.out.println("-".repeat(84));
-        System.out.printf("Total: $%.2f across %d expense(s)%n", total, rows.size());
+        out.append("-".repeat(84)).append(System.lineSeparator());
+        out.append(String.format("Total: $%.2f across %d expense(s)%n", total, rows.size()));
+        System.out.println();
+        System.out.print(out);
+        saveReport("expenses-" + start + "-to-" + end, out.toString());
+    }
+
+    // writes a report to reports/<name>_<timestamp>.txt so it can be reviewed later
+    private static void saveReport(String name, String content) {
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss"));
+        Path file = Path.of("reports", name + "_" + timestamp + ".txt");
+        try {
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, content);
+            System.out.println("Report saved to " + file);
+        } catch (IOException e) {
+            System.out.println("Could not save report to file: " + e.getMessage());
+        }
     }
 
     // centers a title over a table of the given width
@@ -235,6 +264,26 @@ public class Launcher {
     private static String fit(String value, int width) {
         if (value == null) return "";
         return value.length() <= width ? value : value.substring(0, width - 3) + "...";
+    }
+
+    
+
+    // echoes * for each typed character, like a typical login form;
+    // falls back to plain visible input when no real terminal is attached
+    // (e.g. IntelliJ run window without "Emulate terminal in output console")
+    private static String readPassword(Scanner scanner, String prompt) {
+        try (org.jline.terminal.Terminal terminal =
+                org.jline.terminal.TerminalBuilder.builder().system(true).dumb(true).build()) {
+            if (!terminal.getType().startsWith("dumb")) {
+                return org.jline.reader.LineReaderBuilder.builder()
+                        .terminal(terminal).build()
+                        .readLine(prompt, '*');
+            }
+        } catch (Exception ignored) {
+            // no usable terminal - use the visible fallback below
+        }
+        System.out.print(prompt);
+        return scanner.nextLine();
     }
 
     private static int promptForInt(Scanner scanner, String prompt) {
