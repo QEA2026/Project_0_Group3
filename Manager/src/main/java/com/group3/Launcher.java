@@ -270,7 +270,6 @@ public class Launcher {
 
     // echoes * for each typed character, like a typical login form;
     // falls back to plain visible input when no real terminal is attached
-    // (e.g. IntelliJ run window without "Emulate terminal in output console")
     private static String readPassword(Scanner scanner, String prompt) {
         try (org.jline.terminal.Terminal terminal =
                 org.jline.terminal.TerminalBuilder.builder().system(true).dumb(true).build()) {
