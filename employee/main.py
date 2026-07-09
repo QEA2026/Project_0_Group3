@@ -14,6 +14,8 @@ from repository import (DatabaseConnection , UserRepository , User, Expense, Exp
 from service import AuthenticationService, ExpenseService
 from api import auth_bp, expense_bp
 
+
+
 db_path = os.getenv("APP_DB_PATH", "../db/main")  # with default
 jwt_secret_key = os.getenv("jwt_secret_key", "expense_manager_abdulrahman_scot_2026")
 LOCAL_API_URL = "http://127.0.0.1:5000"

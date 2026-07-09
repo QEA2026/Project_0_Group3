@@ -3,5 +3,5 @@ from .expense_service import ExpenseService
 
 __all__ = [
     "AuthenticationService",
-    "ExpenseService"
+    "ExpenseService",
 ]
